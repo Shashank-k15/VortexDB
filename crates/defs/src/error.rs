@@ -1,4 +1,6 @@
 use std::io;
+
+use crate::Dimension;
 #[derive(Debug, PartialEq, Eq)]
 pub enum DbError {
     ParseError,
@@ -8,6 +10,7 @@ pub enum DbError {
     IndexError(String),
     LockError,
     DimensionMismatch,
+    InvalidDimension { expected: Dimension, got: Dimension },
 }
 
 #[derive(Debug)]
