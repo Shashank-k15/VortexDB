@@ -1,4 +1,4 @@
-use api::{init_api, DbConfig, VectorDb};
+use api::{DbConfig, VectorDb, init_api};
 use index::IndexType;
 use std::io;
 use std::path::PathBuf;
@@ -57,10 +57,10 @@ impl DatabaseManager {
                 self.selected_database = Some((name, path));
                 Ok(())
             }
-            Err(e) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Failed to create database: {:?}", e),
-            )),
+            Err(err) => Err(io::Error::other(format!(
+                "Failed to create database: {:?}",
+                err
+            ))),
         }
     }
 
@@ -88,21 +88,21 @@ impl DatabaseManager {
                 self.selected_database = Some((name, path));
                 Ok(())
             }
-            Err(e) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                format!("Failed to open database: {:?}", e),
-            )),
+            Err(err) => Err(io::Error::other(format!(
+                "Failed to open database: {:?}",
+                err
+            ))),
         }
     }
 
     pub fn delete_database(&mut self, path: &PathBuf) -> io::Result<()> {
         // Close current connection if it's the same database
-        if let Some(current_path) = &self.current_db_path {
-            if current_path == path {
-                self.storage_engine = None;
-                self.current_db_path = None;
-                self.api_db = None;
-            }
+        if let Some(current_path) = &self.current_db_path
+            && current_path == path
+        {
+            self.storage_engine = None;
+            self.current_db_path = None;
+            self.api_db = None;
         }
 
         // Remove from available databases list
@@ -128,11 +128,11 @@ impl DatabaseManager {
         for entry in std::fs::read_dir(&db_dir)? {
             let entry = entry?;
             let path = entry.path();
-            if path.is_dir() {
-                if let Some(name) = path.file_name() {
-                    self.available_databases
-                        .push((name.to_string_lossy().to_string(), path));
-                }
+            if path.is_dir()
+                && let Some(name) = path.file_name()
+            {
+                self.available_databases
+                    .push((name.to_string_lossy().to_string(), path));
             }
         }
 

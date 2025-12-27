@@ -1,4 +1,4 @@
-use crate::{distance, VectorIndex};
+use crate::{VectorIndex, distance};
 use defs::{DbError, DenseVector, IndexedVector, PointId, Similarity};
 use std::{
     cmp::Ordering,
@@ -166,7 +166,7 @@ impl KDTree {
         let mut depth = 0;
         // let dim = self.dim;
 
-        while let Some(ref mut node_box) = current_link {
+        while let Some(node_box) = current_link {
             let axis = depth % dim;
             let current_node = node_box.as_mut();
 
@@ -305,10 +305,10 @@ impl KDTree {
         let mut current = self.root.as_ref();
 
         // Check root first (depth 0)
-        if let Some(node) = current {
-            if Self::is_unbalanced(node) {
-                unbalanced_depth = Some(0);
-            }
+        if let Some(node) = current
+            && Self::is_unbalanced(node)
+        {
+            unbalanced_depth = Some(0);
         }
 
         // Then traverse the path and check each node
@@ -326,11 +326,11 @@ impl KDTree {
                 };
 
                 // Check the child node we just moved to (at depth idx + 1)
-                if let Some(child) = current {
-                    if Self::is_unbalanced(child) {
-                        unbalanced_depth = Some(idx + 1);
-                        break;
-                    }
+                if let Some(child) = current
+                    && Self::is_unbalanced(child)
+                {
+                    unbalanced_depth = Some(idx + 1);
+                    break;
                 }
             }
         }
@@ -354,16 +354,16 @@ impl KDTree {
                 self.point_ids.remove(point_id);
             }
 
-            if Self::should_rebuild_global(self) {
-                if let Some(root) = self.root.take() {
-                    let mut vectors = Self::collect_active_vectors(*root);
-                    if !vectors.is_empty() {
-                        self.root = Some(Self::build_recursive(&mut vectors, 0, self.dim));
-                    }
-
-                    self.total_nodes = vectors.len();
-                    self.deleted_count = 0;
+            if Self::should_rebuild_global(self)
+                && let Some(root) = self.root.take()
+            {
+                let mut vectors = Self::collect_active_vectors(*root);
+                if !vectors.is_empty() {
+                    self.root = Some(Self::build_recursive(&mut vectors, 0, self.dim));
                 }
+
+                self.total_nodes = vectors.len();
+                self.deleted_count = 0;
             }
 
             return deleted;

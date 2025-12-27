@@ -2,11 +2,11 @@
 
 [package]
 name = "index"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
-ordered-float = "5.0.0"
-
 defs = { path = "../defs" }
+ordered-float = "5.0.0"
 uuid.workspace = true

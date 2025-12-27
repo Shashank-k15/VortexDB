@@ -3,7 +3,7 @@ use defs::{DbError, DenseVector, IndexedVector, PointId, Similarity};
 pub mod flat;
 pub mod kd_tree;
 
-pub trait VectorIndex {
+pub trait VectorIndex: Send + Sync {
     fn insert(&mut self, vector: IndexedVector) -> Result<(), DbError>;
 
     // Returns true if point id existed and is deleted, else returns false
@@ -59,6 +59,7 @@ pub fn distance(a: &DenseVector, b: &DenseVector, dist_type: Similarity) -> f32 
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum IndexType {
     Flat,
     KDTree,

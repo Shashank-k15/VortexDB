@@ -1,6 +1,6 @@
 use defs::{DbError, DenseVector, DistanceOrderedVector, IndexedVector, PointId, Similarity};
 
-use crate::{distance, VectorIndex};
+use crate::{VectorIndex, distance};
 
 pub struct FlatIndex {
     index: Vec<IndexedVector>,
@@ -240,7 +240,7 @@ mod tests {
         index
             .insert(IndexedVector {
                 id: id1,
-                vector: vec![1.0, 0.0, 1.0, 0.0],
+                vector: vec![1.0, 0.0, 1.0, 1.0],
             })
             .unwrap();
         index
