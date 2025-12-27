@@ -7,6 +7,5 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-defs = { path = "../defs" }
-ordered-float = "5.0.0"
+defs.workspace = true
 uuid.workspace = true
