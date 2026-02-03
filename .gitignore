@@ -6,4 +6,5 @@
 /data/
 .TODO
 /databases
+/crates/benchmark/Datasets
 .env
